@@ -29,6 +29,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.example.android.pets.data.PetContract;
+import com.example.android.pets.data.PetContract.PetEntry;
 import com.example.android.pets.data.PetDbHelper;
 
 /**
@@ -53,6 +54,12 @@ public class CatalogActivity extends AppCompatActivity {
         });
         mDbHelper = new PetDbHelper(this);
 
+        displayDatabaseInfo();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         displayDatabaseInfo();
     }
 
@@ -89,12 +96,12 @@ public class CatalogActivity extends AppCompatActivity {
 
         ContentValues values = new ContentValues();
 
-        values.put(PetContract.PetEntry.COLUMN_PET_NAME, "Toto");
-        values.put(PetContract.PetEntry.COLUMN_PET_BREED,"Terrier");
-        values.put(PetContract.PetEntry.COLUMN_PET_GENDER, PetContract.PetEntry.GENDER_MALE);
-        values.put(PetContract.PetEntry.COLUMN_PET_WEIGHT,7);
+        values.put(PetEntry.COLUMN_PET_NAME, "Toto");
+        values.put(PetEntry.COLUMN_PET_BREED,"Terrier");
+        values.put(PetEntry.COLUMN_PET_GENDER, PetContract.PetEntry.GENDER_MALE);
+        values.put(PetEntry.COLUMN_PET_WEIGHT,7);
 
-        long newRowId = db.insert(PetContract.PetEntry.TABLE_NAME,null, values);
+        long newRowId = db.insert(PetEntry.TABLE_NAME,null, values);
 
         Log.v("CatalogActivity", "New row ID " + newRowId);
     }
