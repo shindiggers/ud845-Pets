@@ -15,10 +15,12 @@
  */
 package com.example.android.pets;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -37,7 +39,7 @@ import com.example.android.pets.data.PetDbHelper;
  */
 public class CatalogActivity extends AppCompatActivity {
 
-    private PetDbHelper mDbHelper;
+    //private PetDbHelper mDbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +54,6 @@ public class CatalogActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        mDbHelper = new PetDbHelper(this);
 
         displayDatabaseInfo();
     }
@@ -137,8 +138,8 @@ public class CatalogActivity extends AppCompatActivity {
 
     private void insertPet(){
 
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
+        // Create a ContentValues object where column names are the keys,
+        // and Toto's pet attributes are the values.
         ContentValues values = new ContentValues();
 
         values.put(PetEntry.COLUMN_PET_NAME, "Toto");
@@ -146,7 +147,9 @@ public class CatalogActivity extends AppCompatActivity {
         values.put(PetEntry.COLUMN_PET_GENDER, PetContract.PetEntry.GENDER_MALE);
         values.put(PetEntry.COLUMN_PET_WEIGHT,7);
 
-        long newRowId = db.insert(PetEntry.TABLE_NAME,null, values);
+        Uri petInsertUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
+
+        long newRowId = ContentUris.parseId(petInsertUri);
 
         Log.v("CatalogActivity", "New row ID " + newRowId);
     }
