@@ -30,6 +30,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.android.pets.data.PetContract;
@@ -69,6 +70,23 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
         // Kick off the Loader
         getLoaderManager().initLoader(PET_LOADER, null,this);
+
+        // Setup the item click listener
+        petListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+               // Form the content URI that represents the specific pet that was clicked on,
+               // by appending the "id" (passed as input to the method) onto the
+               // {@link PetEntry#CONTENT_URI}.
+               // For example, the URI would be "content://com.example.android.pets/pets/2"
+               // if the pet with ID 2 was clicked on.
+               Uri currentPetUri = ContentUris.withAppendedId(PetEntry.CONTENT_URI,id);
+               // Create new intent to go to {@link EditorActivity}
+               Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
+               intent.setData(currentPetUri);
+               startActivity(intent);
+            }
+        });
     }
 
 
