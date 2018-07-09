@@ -65,8 +65,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         petListView.setEmptyView(emptyView);
 
         mCursorAdapter = new PetCursorAdapter(this,null);
-
-
+        petListView.setAdapter(mCursorAdapter);
 
         // Kick off the Loader
         getLoaderManager().initLoader(PET_LOADER, null,this);
@@ -125,7 +124,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         String[] projection = {
                 PetEntry.COLUMN_ID,
                 PetEntry.COLUMN_PET_NAME,
-                PetEntry.COLUMN_PET_GENDER
+                PetEntry.COLUMN_PET_BREED
         };
 
         // This loader will execute the ContentProvider's query method on a background thread

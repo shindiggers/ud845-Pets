@@ -100,7 +100,7 @@ public final class PetContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_PETS;
 
 
-        public static boolean isGenderValid (int gender){
+        public static boolean isValidGender(int gender){
             if (gender == GENDER_UNKNOWN || gender == GENDER_MALE || gender == GENDER_FEMALE){
                 return true;
             }
