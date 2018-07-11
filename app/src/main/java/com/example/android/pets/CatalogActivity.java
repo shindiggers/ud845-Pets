@@ -44,6 +44,7 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     private static final int PET_LOADER = 0;
 
     PetCursorAdapter mCursorAdapter;
+
     //private PetDbHelper mDbHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,43 +66,41 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         View emptyView = findViewById(R.id.empty_view);
         petListView.setEmptyView(emptyView);
 
-        mCursorAdapter = new PetCursorAdapter(this,null);
+        mCursorAdapter = new PetCursorAdapter(this, null);
         petListView.setAdapter(mCursorAdapter);
 
         // Kick off the Loader
-        getLoaderManager().initLoader(PET_LOADER, null,this);
+        getLoaderManager().initLoader(PET_LOADER, null, this);
 
         // Setup the item click listener
         petListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-               // Form the content URI that represents the specific pet that was clicked on,
-               // by appending the "id" (passed as input to the method) onto the
-               // {@link PetEntry#CONTENT_URI}.
-               // For example, the URI would be "content://com.example.android.pets/pets/2"
-               // if the pet with ID 2 was clicked on.
-               Uri currentPetUri = ContentUris.withAppendedId(PetEntry.CONTENT_URI,id);
-               // Create new intent to go to {@link EditorActivity}
-               Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
-               intent.setData(currentPetUri);
-               startActivity(intent);
+                // Form the content URI that represents the specific pet that was clicked on,
+                // by appending the "id" (passed as input to the method) onto the
+                // {@link PetEntry#CONTENT_URI}.
+                // For example, the URI would be "content://com.example.android.pets/pets/2"
+                // if the pet with ID 2 was clicked on.
+                Uri currentPetUri = ContentUris.withAppendedId(PetEntry.CONTENT_URI, id);
+                // Create new intent to go to {@link EditorActivity}
+                Intent intent = new Intent(CatalogActivity.this, EditorActivity.class);
+                intent.setData(currentPetUri);
+                startActivity(intent);
             }
         });
     }
 
 
-
-
-    private void insertPet(){
+    private void insertPet() {
 
         // Create a ContentValues object where column names are the keys,
         // and Toto's pet attributes are the values.
         ContentValues values = new ContentValues();
 
         values.put(PetEntry.COLUMN_PET_NAME, "Toto");
-        values.put(PetEntry.COLUMN_PET_BREED,"Terrier");
+        values.put(PetEntry.COLUMN_PET_BREED, "Terrier");
         values.put(PetEntry.COLUMN_PET_GENDER, PetContract.PetEntry.GENDER_MALE);
-        values.put(PetEntry.COLUMN_PET_WEIGHT,7);
+        values.put(PetEntry.COLUMN_PET_WEIGHT, 7);
 
         Uri petInsertUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
 

@@ -23,8 +23,8 @@ public class PetCursorAdapter extends CursorAdapter {
      * @param context The context
      * @param c       The cursor from which to get the data.
      */
-    public PetCursorAdapter (Context context, Cursor c){
-        super(context,c,0);
+    public PetCursorAdapter(Context context, Cursor c) {
+        super(context, c, 0);
     }
 
     /**
@@ -40,7 +40,7 @@ public class PetCursorAdapter extends CursorAdapter {
     // The newView method is used to inflate a new view and return it,
     // you don't bind any data to the view at this point.
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-        return LayoutInflater.from(context).inflate(R.layout.list_item,parent,false);
+        return LayoutInflater.from(context).inflate(R.layout.list_item, parent, false);
     }
 
     /**

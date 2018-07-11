@@ -45,16 +45,24 @@ import java.util.Locale;
  */
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    /** EditText field to enter the pet's name */
+    /**
+     * EditText field to enter the pet's name
+     */
     private EditText mNameEditText;
 
-    /** EditText field to enter the pet's breed */
+    /**
+     * EditText field to enter the pet's breed
+     */
     private EditText mBreedEditText;
 
-    /** EditText field to enter the pet's weight */
+    /**
+     * EditText field to enter the pet's weight
+     */
     private EditText mWeightEditText;
 
-    /** EditText field to enter the pet's gender */
+    /**
+     * EditText field to enter the pet's gender
+     */
     private Spinner mGenderSpinner;
 
     /**
@@ -79,14 +87,14 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         Intent intent = getIntent();
         mCurrentPetUri = intent.getData();
 
-        Log.i("EDITORACTIVITY LOG","Uri passed in = " + mCurrentPetUri);
+        Log.i("EDITORACTIVITY LOG", "Uri passed in = " + mCurrentPetUri);
 
         // If the intent in NOT null, then we know we are editing and existing pet.
-        if(mCurrentPetUri != null){
+        if (mCurrentPetUri != null) {
             // This is an existing pet, so change the app bar to "Edit Pet"
             setTitle(getString(R.string.editor_activity_title_edit_existing_pet));
             // Kick off the Loader
-            getLoaderManager().initLoader(PET_LOADER, null,this);
+            getLoaderManager().initLoader(PET_LOADER, null, this);
 
         } else {
             // Otherwise this is a new pet, so change the app bar to say "Add a Pet"
@@ -177,16 +185,16 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             // and pass in the new ContentValues. Pass in null for the selection and selection args
             // because mCurrentPetUri will already identify the correct row in the database that
             // we want to modify.
-            int updateResult = getContentResolver().update(mCurrentPetUri,values,null,null);
+            int updateResult = getContentResolver().update(mCurrentPetUri, values, null, null);
 
-            if(updateResult == 1){
+            if (updateResult == 1) {
                 // If 1 is returned then the pet was updated successfully.
                 Toast.makeText(this, R.string.editor_update_pet_successful, Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(this, R.string.editor_update_pet_failed, Toast.LENGTH_LONG).show();
             }
-            }
         }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
