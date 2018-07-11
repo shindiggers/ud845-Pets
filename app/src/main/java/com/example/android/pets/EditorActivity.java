@@ -67,7 +67,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private static final int PET_LOADER = 1;
 
     // Set up currentPetUri object variable
-    private Uri currentPetUri;
+    private Uri mCurrentPetUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,12 +77,12 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         // Examine the intent that was used to launch this activity,
         // in order to figure out if we are creating a new pet or editing and existing one.
         Intent intent = getIntent();
-        currentPetUri = intent.getData();
+        mCurrentPetUri = intent.getData();
 
-        Log.i("EDITORACTIVITY LOG","Uri passed in = " + currentPetUri);
+        Log.i("EDITORACTIVITY LOG","Uri passed in = " + mCurrentPetUri);
 
         // If the intent in NOT null, then we know we are editing and existing pet.
-        if(currentPetUri != null){
+        if(mCurrentPetUri != null){
             // This is an existing pet, so change the app bar to "Edit Pet"
             setTitle(getString(R.string.editor_activity_title_edit_existing_pet));
             // Kick off the Loader
@@ -144,7 +144,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     /**
      * Get user input from editor and save new pet into database.
      */
-    private void editPet() {
+    private void savePet() {
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
         String nameText = mNameEditText.getText().toString().trim();
@@ -161,17 +161,32 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         values.put(PetEntry.COLUMN_PET_GENDER, genderInt);
         values.put(PetEntry.COLUMN_PET_WEIGHT, weightText);
 
-        // Insert a new pet into the provider, returning the content URI for the new pet.
-        Uri petInsertUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
+        if (mCurrentPetUri == null) {
+            // Insert a new pet into the provider, returning the content URI for the new pet.
+            Uri petInsertUri = getContentResolver().insert(PetEntry.CONTENT_URI, values);
 
-        // Show a toast message depending on whether or not the insertion was successful
-        if (petInsertUri == null) {
-            // If the new content URI is null, then there was an error with insertion.
-            Toast.makeText(this, R.string.editor_insert_pet_failed, Toast.LENGTH_LONG).show();
+            // Show a toast message depending on whether or not the insertion was successful
+            if (petInsertUri == null) {
+                // If the new content URI is null, then there was an error with insertion.
+                Toast.makeText(this, R.string.editor_insert_pet_failed, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, R.string.editor_insert_pet_successful, Toast.LENGTH_LONG).show();
+            }
         } else {
-            Toast.makeText(this, R.string.editor_insert_pet_successful, Toast.LENGTH_LONG).show();
+            // Otherwise this is an EXISTING pet, so update the pet with content URI: mCurrentPetUri
+            // and pass in the new ContentValues. Pass in null for the selection and selection args
+            // because mCurrentPetUri will already identify the correct row in the database that
+            // we want to modify.
+            int updateResult = getContentResolver().update(mCurrentPetUri,values,null,null);
+
+            if(updateResult == 1){
+                // If 1 is returned then the pet was updated successfully.
+                Toast.makeText(this, R.string.editor_update_pet_successful, Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, R.string.editor_update_pet_failed, Toast.LENGTH_LONG).show();
+            }
+            }
         }
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -188,7 +203,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             // Respond to a click on the "Save" menu option
             case R.id.action_save:
                 // Save new pet into database
-                editPet();
+                savePet();
                 // end switch
                 finish();
                 return true;
@@ -217,7 +232,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         };
 
         return new CursorLoader(this,
-                currentPetUri,
+                mCurrentPetUri,
                 projection,
                 null,
                 null,
