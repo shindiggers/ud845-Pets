@@ -81,4 +81,13 @@
 
     <!-- EditorActivity title for adding new pet-->
     <string name="editor_activity_title_add_a_new_pet">Add a Pet</string>
+
+    <!-- Dialog message when user is leaving editor but hasn't saved changes [CHAR LIMIT=NONE] -->
+    <string name="unsaved_changes_dialog_message">Disgard your changes and quit editing?</string>
+
+    <!-- Dialog button text for the option to discard a user's changes [CHAR LIMIT=20] -->
+    <string name="disgard">Discard</string>
+
+    <!-- Dialog button text for the option to keep editing the current pet [CHAR LIMIT=20] -->
+    <string name="keep_editing">Keep editing</string>
 </resources>
