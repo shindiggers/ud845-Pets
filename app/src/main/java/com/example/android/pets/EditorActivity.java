@@ -157,8 +157,21 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         // Use trim to eliminate leading or trailing white space
         String nameText = mNameEditText.getText().toString().trim();
         String breedText = mBreedEditText.getText().toString().trim();
-        int weightText = Integer.parseInt(mWeightEditText.getText().toString().trim());
+        String weightText = mBreedEditText.getText().toString().trim();
         int genderInt = mGender;
+
+        // Check if this is supposed to be a new pet
+        // and check if all the fields in the editor are blank, or unmodified in the case of gender
+        if(
+                mCurrentPetUri == null &&
+                TextUtils.isEmpty(nameText) &&
+                TextUtils.isEmpty(breedText) &&
+                TextUtils.isEmpty(weightText) &&
+                mGender == PetEntry.GENDER_UNKNOWN) {
+            // Since no fields were modified, we can return early without creating a new pet.
+            // No need to create ContentValues and no need to do any ContentProvider operations.
+            return;
+        }
 
         // Create a ContentValues object where column names are the keys,
         // and pet attributes from the editor are the values.
@@ -167,7 +180,13 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         values.put(PetEntry.COLUMN_PET_NAME, nameText);
         values.put(PetEntry.COLUMN_PET_BREED, breedText);
         values.put(PetEntry.COLUMN_PET_GENDER, genderInt);
-        values.put(PetEntry.COLUMN_PET_WEIGHT, weightText);
+        int weight = 0;
+        // If the weight is not provided by the user, don't try to parse the string into an
+        // integer value. Use 0 by default.
+        if(!TextUtils.isEmpty(weightText)){
+            weight = Integer.parseInt(weightText);
+        }
+        values.put(PetEntry.COLUMN_PET_WEIGHT, weight);
 
         if (mCurrentPetUri == null) {
             // Insert a new pet into the provider, returning the content URI for the new pet.
