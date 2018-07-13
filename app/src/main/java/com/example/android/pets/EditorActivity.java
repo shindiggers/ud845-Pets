@@ -84,7 +84,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     // Set up variable to use for data change listening
     private boolean mPetHasChanged = false;
 
-        @Override
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
@@ -179,12 +179,12 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
         // Check if this is supposed to be a new pet
         // and check if all the fields in the editor are blank, or unmodified in the case of gender
-        if(
+        if (
                 mCurrentPetUri == null &&
-                TextUtils.isEmpty(nameText) &&
-                TextUtils.isEmpty(breedText) &&
-                TextUtils.isEmpty(weightText) &&
-                mGender == PetEntry.GENDER_UNKNOWN) {
+                        TextUtils.isEmpty(nameText) &&
+                        TextUtils.isEmpty(breedText) &&
+                        TextUtils.isEmpty(weightText) &&
+                        mGender == PetEntry.GENDER_UNKNOWN) {
             // Since no fields were modified, we can return early without creating a new pet.
             // No need to create ContentValues and no need to do any ContentProvider operations.
             return;
@@ -200,7 +200,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         int weight = 0;
         // If the weight is not provided by the user, don't try to parse the string into an
         // integer value. Use 0 by default.
-        if(!TextUtils.isEmpty(weightText)){
+        if (!TextUtils.isEmpty(weightText)) {
             weight = Integer.parseInt(weightText);
         }
         values.put(PetEntry.COLUMN_PET_WEIGHT, weight);
@@ -213,11 +213,11 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             if (petInsertUri == null) {
                 // If the new content URI is null, then there was an error with insertion.
                 Toast failedToast = Toast.makeText(this, R.string.editor_insert_pet_failed, Toast.LENGTH_LONG);
-                failedToast.setGravity(Gravity.BOTTOM,0,200);
+                failedToast.setGravity(Gravity.BOTTOM, 0, 200);
                 failedToast.show();
             } else {
                 Toast successToast = Toast.makeText(this, R.string.editor_insert_pet_successful, Toast.LENGTH_LONG);
-                successToast.setGravity(Gravity.BOTTOM,0,200);
+                successToast.setGravity(Gravity.BOTTOM, 0, 200);
                 successToast.show();
             }
         } else {
@@ -230,11 +230,11 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             if (updateResult == 1) {
                 // If 1 is returned then the pet was updated successfully.
                 Toast updateSuccess = Toast.makeText(this, R.string.editor_update_pet_successful, Toast.LENGTH_LONG);
-                updateSuccess.setGravity(Gravity.BOTTOM,0,200);
+                updateSuccess.setGravity(Gravity.BOTTOM, 0, 200);
                 updateSuccess.show();
             } else {
                 Toast updateFail = Toast.makeText(this, R.string.editor_update_pet_failed, Toast.LENGTH_LONG);
-                updateFail.setGravity(Gravity.BOTTOM,0,200);
+                updateFail.setGravity(Gravity.BOTTOM, 0, 200);
                 updateFail.show();
             }
         }
@@ -261,13 +261,14 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
-                // Do nothing for now
+                // Show deletion confirmation dialog
+                showDeleteConfirmationDialog();
                 return true;
             // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
                 // If the pet hasn't changed, continue with navigating up to parent activity
                 // which is the {@link CatalogActivity}
-                if(!mPetHasChanged) {
+                if (!mPetHasChanged) {
                     // Navigate back to parent activity (CatalogActivity)
                     NavUtils.navigateUpFromSameTask(this);
                     return true;
@@ -284,8 +285,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                     }
                 };
 
-            showUnsavedChangesDialog(discardButtonListener);
-            return true;
+                showUnsavedChangesDialog(discardButtonListener);
+                return true;
 
         }
         return super.onOptionsItemSelected(item);
@@ -313,13 +314,25 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
 
-        cursor.moveToFirst();
+        // Exit if the cursor is null or there is less than 1 row in the cursor.
+        if(cursor== null || cursor.getCount()<1){
+            return;
+        }
+
+        //Proceed with moving to the first row of the cursor and reading data from it
+        // (This should be the only row in the cursor)
+        if (cursor.moveToFirst());
+
+        int nameColumnIndex = cursor.getColumnIndex(PetEntry.COLUMN_PET_NAME);
+        int breedColumnIndex = cursor.getColumnIndex(PetEntry.COLUMN_PET_BREED);
+        int genderColumnIndex = cursor.getColumnIndex(PetEntry.COLUMN_PET_GENDER);
+        int weightColumnIndex = cursor.getColumnIndex(PetEntry.COLUMN_PET_WEIGHT);
 
         //Extract properties from cursor
-        String name = cursor.getString(cursor.getColumnIndexOrThrow(PetEntry.COLUMN_PET_NAME));
-        String breed = cursor.getString(cursor.getColumnIndexOrThrow(PetEntry.COLUMN_PET_BREED));
-        int gender = cursor.getInt(cursor.getColumnIndexOrThrow(PetEntry.COLUMN_PET_GENDER));
-        int weight = cursor.getInt(cursor.getColumnIndexOrThrow(PetEntry.COLUMN_PET_WEIGHT));
+        String name = cursor.getString(nameColumnIndex);
+        String breed = cursor.getString(breedColumnIndex);
+        int gender = cursor.getInt(genderColumnIndex);
+        int weight = cursor.getInt(weightColumnIndex);
         //Assign cursor information to TextViews
         mNameEditText.setText(name);
         mBreedEditText.setText(breed);
@@ -344,16 +357,16 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
     };
 
-    private void showUnsavedChangesDialog (DialogInterface.OnClickListener discardButtonListener){
+    private void showUnsavedChangesDialog(DialogInterface.OnClickListener discardButtonListener) {
         // Create and AlertDialog.Builder and set the message, and click listeners
         // for the positive and negative buttons of the dialogue.
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.unsaved_changes_dialog_message);
-        builder.setPositiveButton(R.string.disgard,discardButtonListener);
+        builder.setPositiveButton(R.string.disgard, discardButtonListener);
         builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if(dialog != null){
+                if (dialog != null) {
                     dialog.dismiss();
                 }
             }
@@ -366,7 +379,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public void onBackPressed() {
         // If the pet has not changed, continue handling back button press
-        if(!mPetHasChanged) {
+        if (!mPetHasChanged) {
             super.onBackPressed();
             return;
         }
@@ -383,7 +396,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
         // Show dialog that there are unsaved changes
         showUnsavedChangesDialog(discardButtonClickListener);
-}
+    }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
@@ -394,5 +407,54 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             menuItem.setVisible(false);
         }
         return true;
+    }
+
+    private void showDeleteConfirmationDialog() {
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.delete_dialog_msg);
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Delete" button, so delete the pet.
+                deletePet();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Cancel" button, so dismiss the dialog
+                // and continue editing the pet.
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    /**
+     * Perform the deletion of the pet in the database.
+     */
+    private void deletePet() {
+        // Only perform the delete if this is an existing pet.
+        if (mCurrentPetUri != null) {
+            // Call the ContentResolver to delete the pet at the given content URI.
+            // Pass in null for the selection and selection args because the mCurrentPetUri
+            // content URI already identifies the pet that we want.
+            int deletedRow = getContentResolver().delete(mCurrentPetUri, null, null);
+
+            if (deletedRow == 0) {
+                Toast rowDeletedToast = Toast.makeText(this, R.string.editor_delete_pet_failed, Toast.LENGTH_LONG);
+                rowDeletedToast.setGravity(Gravity.BOTTOM, 0, 200);
+                rowDeletedToast.show();
+            } else {
+                Toast rowDeletedToast = Toast.makeText(this, R.string.editor_delete_pet_successful, Toast.LENGTH_LONG);
+                rowDeletedToast.setGravity(Gravity.BOTTOM, 0, 200);
+                rowDeletedToast.show();
+            }
+        }finish();
     }
 }
