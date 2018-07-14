@@ -3,7 +3,6 @@ package com.example.android.pets;
 import android.content.Context;
 import android.database.Cursor;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +10,8 @@ import android.widget.CursorAdapter;
 import android.widget.TextView;
 
 import com.example.android.pets.data.PetContract;
+
+import java.util.Locale;
 
 /**
  * {@link PetCursorAdapter} is an adapter for a list or grid view
@@ -60,15 +61,44 @@ public class PetCursorAdapter extends CursorAdapter {
         // Find TextViews to modify
         TextView tvName = (TextView) view.findViewById(R.id.name);
         TextView tvBreed = (TextView) view.findViewById(R.id.summary);
+        TextView tvGender = (TextView) view.findViewById(R.id.gender);
+        TextView tvWeight = (TextView) view.findViewById(R.id.weight);
+
         //Extract properties from cursor
         String name = cursor.getString(cursor.getColumnIndexOrThrow(PetContract.PetEntry.COLUMN_PET_NAME));
         String breed = cursor.getString(cursor.getColumnIndexOrThrow(PetContract.PetEntry.COLUMN_PET_BREED));
-        if(TextUtils.isEmpty(breed)){
+        if (TextUtils.isEmpty(breed)) {
             breed = context.getString(R.string.unknown_breed);
         }
 
+        int gender = cursor.getInt(cursor.getColumnIndex(PetContract.PetEntry.COLUMN_PET_GENDER));
+
+        String genderT = getGenderText(gender);
+
+        int weight = cursor.getInt(cursor.getColumnIndex(PetContract.PetEntry.COLUMN_PET_WEIGHT));
+
+        String weightString = "TBC";
+        if(weight != 0){
+            weightString = String.format(Locale.getDefault(), "%d", weight) + " kg";
+        }
         //Assign cursor information to TextViews
         tvName.setText(name);
         tvBreed.setText(breed);
+        tvGender.setText(genderT);
+        tvWeight.setText(weightString);
+
+    }
+
+    private String getGenderText(int gender) {
+        String genderText = "Unknown gender";
+        switch (gender) {
+            case 1:
+                return genderText = "Male";
+            case 2:
+                return genderText = "Female";
+            default:
+                return genderText;
+
+        }
     }
 }

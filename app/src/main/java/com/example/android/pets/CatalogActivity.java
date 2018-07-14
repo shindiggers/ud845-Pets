@@ -143,7 +143,9 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         String[] projection = {
                 PetEntry.COLUMN_ID,
                 PetEntry.COLUMN_PET_NAME,
-                PetEntry.COLUMN_PET_BREED
+                PetEntry.COLUMN_PET_BREED,
+                PetEntry.COLUMN_PET_GENDER,
+                PetEntry.COLUMN_PET_WEIGHT
         };
 
         // This loader will execute the ContentProvider's query method on a background thread
